@@ -1,0 +1,26 @@
+name: "mysql_100k_4fields_custom"
+description: "MySQL 100K行 4字段测试（自定义表名和资产名）"
+
+database:
+  type: "mysql"
+  name: "mysql_test"
+
+schema:
+  field_count: 4
+  field_types: ["int", "varchar", "text", "decimal"]
+  max_field_size: 1024
+  table_name: "test_100k_4f"
+  asset_name: "test_100k_4f_asset"
+
+data:
+  row_count: 100000
+  keep_table: true
+
+tests:
+  - type: "read"
+    expected: 100000
+    tolerance: 0.1
+  
+  - type: "write"
+    expected: 100000
+    tolerance: 0.1

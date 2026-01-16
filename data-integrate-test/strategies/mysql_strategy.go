@@ -5,6 +5,7 @@ import (
 	"data-integrate-test/config"
 	"database/sql"
 	"fmt"
+
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -20,16 +21,16 @@ func NewMySQLStrategy(config *config.DatabaseConfig) *MySQLStrategy {
 func (m *MySQLStrategy) Connect(ctx context.Context) error {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true&loc=Local",
 		m.config.User, m.config.Password, m.config.Host, m.config.Port, m.config.Database)
-	
+
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
 		return err
 	}
-	
+
 	if err := db.PingContext(ctx); err != nil {
 		return err
 	}
-	
+
 	m.db = db
 	return nil
 }
@@ -59,3 +60,17 @@ func (m *MySQLStrategy) GetRowCount(ctx context.Context, tableName string) (int6
 	return count, err
 }
 
+func (m *MySQLStrategy) TableExists(ctx context.Context, tableName string) (bool, error) {
+	query := `
+		SELECT COUNT(*) 
+		FROM information_schema.tables 
+		WHERE table_schema = DATABASE() 
+		AND table_name = ?
+	`
+	var count int
+	err := m.db.QueryRowContext(ctx, query, tableName).Scan(&count)
+	if err != nil {
+		return false, err
+	}
+	return count > 0, nil
+}

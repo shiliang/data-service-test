@@ -13,7 +13,7 @@ mock_services:
 databases:
   - name: "mysql_test"
     type: "mysql"
-    host: "mysql-test"  # 使用容器名，如果在本地运行改为 localhost
+    host: "host.docker.internal"  # 从容器访问本地MySQL，使用host.docker.internal
     port: 3306
     user: "root"
     password: "password"

@@ -1,0 +1,26 @@
+name: "mysql_1m_datetime_custom"
+description: "MySQL 1M行 日期时间类型测试（DATE/DATETIME/TIMESTAMP）"
+
+database:
+  type: "mysql"
+  name: "mysql_test"
+
+schema:
+  field_count: 4
+  field_types: ["date", "datetime", "timestamp"]
+  max_field_size: 1024
+  table_name: "test_datetime"
+  asset_name: "test_datetime_asset"
+
+data:
+  row_count: 1000000
+  keep_table: true
+
+tests:
+  - type: "read"
+    expected: 1000000
+    tolerance: 0.1
+  
+  - type: "write"
+    expected: 1000000
+    tolerance: 0.1

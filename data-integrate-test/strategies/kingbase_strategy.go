@@ -5,6 +5,7 @@ import (
 	"data-integrate-test/config"
 	"database/sql"
 	"fmt"
+
 	_ "gitea.com/kingbase/gokb"
 )
 
@@ -20,16 +21,16 @@ func NewKingBaseStrategy(config *config.DatabaseConfig) *KingBaseStrategy {
 func (k *KingBaseStrategy) Connect(ctx context.Context) error {
 	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
 		k.config.Host, k.config.Port, k.config.User, k.config.Password, k.config.Database)
-	
+
 	db, err := sql.Open("kingbase", dsn)
 	if err != nil {
 		return err
 	}
-	
+
 	if err := db.PingContext(ctx); err != nil {
 		return err
 	}
-	
+
 	k.db = db
 	return nil
 }
@@ -59,3 +60,17 @@ func (k *KingBaseStrategy) GetRowCount(ctx context.Context, tableName string) (i
 	return count, err
 }
 
+func (k *KingBaseStrategy) TableExists(ctx context.Context, tableName string) (bool, error) {
+	query := `
+		SELECT COUNT(*) 
+		FROM information_schema.tables 
+		WHERE table_schema = current_schema()
+		AND table_name = $1
+	`
+	var count int
+	err := k.db.QueryRowContext(ctx, query, tableName).Scan(&count)
+	if err != nil {
+		return false, err
+	}
+	return count > 0, nil
+}

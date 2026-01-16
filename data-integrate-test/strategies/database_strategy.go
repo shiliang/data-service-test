@@ -11,21 +11,24 @@ import (
 type DatabaseStrategy interface {
 	// 连接数据库
 	Connect(ctx context.Context) error
-	
+
 	// 获取数据库连接
 	GetDB() *sql.DB
-	
+
 	// 获取数据库类型
 	GetDBType() string
-	
+
 	// 获取连接信息
 	GetConnectionInfo() *config.DatabaseConfig
-	
+
 	// 清理测试数据
 	Cleanup(ctx context.Context, tableName string) error
-	
+
 	// 查询表行数
 	GetRowCount(ctx context.Context, tableName string) (int64, error)
+
+	// 检查表是否存在
+	TableExists(ctx context.Context, tableName string) (bool, error)
 }
 
 // DatabaseStrategyFactory 策略工厂
@@ -49,4 +52,3 @@ func (f *DatabaseStrategyFactory) CreateStrategy(dbConfig *config.DatabaseConfig
 		return nil, fmt.Errorf("unsupported database type: %s", dbConfig.Type)
 	}
 }
-

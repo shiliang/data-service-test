@@ -1,0 +1,26 @@
+name: "mysql_1m_comprehensive_custom"
+description: "MySQL 1M行 全面类型组合测试（包含所有主要MySQL类型）"
+
+database:
+  type: "mysql"
+  name: "mysql_test"
+
+schema:
+  field_count: 16
+  field_types: ["tinyint", "smallint", "mediumint", "int", "bigint", "float", "double", "decimal", "char", "varchar", "text", "mediumtext", "date", "datetime", "timestamp", "blob"]
+  max_field_size: 1024
+  table_name: "test_comprehensive"
+  asset_name: "test_comprehensive_asset"
+
+data:
+  row_count: 1000000
+  keep_table: true
+
+tests:
+  - type: "read"
+    expected: 1000000
+    tolerance: 0.1
+  
+  - type: "write"
+    expected: 1000000
+    tolerance: 0.1

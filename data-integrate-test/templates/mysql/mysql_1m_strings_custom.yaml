@@ -1,0 +1,26 @@
+name: "mysql_1m_strings_custom"
+description: "MySQL 1M行 字符串类型测试（CHAR/VARCHAR/TEXT/MEDIUMTEXT）"
+
+database:
+  type: "mysql"
+  name: "mysql_test"
+
+schema:
+  field_count: 5
+  field_types: ["char", "varchar", "text", "mediumtext"]
+  max_field_size: 1024
+  table_name: "test_strings"
+  asset_name: "test_strings_asset"
+
+data:
+  row_count: 1000000
+  keep_table: true
+
+tests:
+  - type: "read"
+    expected: 1000000
+    tolerance: 0.1
+  
+  - type: "write"
+    expected: 1000000
+    tolerance: 0.1

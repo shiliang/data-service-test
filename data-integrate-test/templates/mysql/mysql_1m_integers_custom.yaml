@@ -1,0 +1,26 @@
+name: "mysql_1m_integers_custom"
+description: "MySQL 1M行 整型类型组合测试（TINYINT/SMALLINT/MEDIUMINT/INT/BIGINT）"
+
+database:
+  type: "mysql"
+  name: "mysql_test"
+
+schema:
+  field_count: 6
+  field_types: ["tinyint", "smallint", "mediumint", "int", "bigint"]
+  max_field_size: 1024
+  table_name: "test_integers"
+  asset_name: "test_integers_asset"
+
+data:
+  row_count: 1000000
+  keep_table: true
+
+tests:
+  - type: "read"
+    expected: 1000000
+    tolerance: 0.1
+  
+  - type: "write"
+    expected: 1000000
+    tolerance: 0.1

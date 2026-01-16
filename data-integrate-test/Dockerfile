@@ -24,9 +24,10 @@ ENV TZ=Asia/Shanghai
 
 WORKDIR /home/workspace
 
-COPY --from=builder /home/workspace/data-integrate-test /home/workspace/bin/
+COPY --from=builder /home/workspace/data-integrate-test /home/workspace/bin/data-integrate-test
 COPY --from=builder /home/workspace/config /home/workspace/config/
 COPY --from=builder /home/workspace/templates /home/workspace/templates/
+RUN chmod +x /home/workspace/bin/data-integrate-test
 
 CMD ["/home/workspace/bin/data-integrate-test"]
 

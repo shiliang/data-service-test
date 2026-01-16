@@ -1,0 +1,26 @@
+name: "mysql_10m_32fields_custom"
+description: "MySQL 10M行 32字段测试（自定义表名和资产名）"
+
+database:
+  type: "mysql"
+  name: "mysql_test"
+
+schema:
+  field_count: 32
+  field_types: ["int", "varchar", "text", "decimal", "datetime", "blob"]
+  max_field_size: 1024
+  table_name: "test_10m_32f"
+  asset_name: "test_10m_32f_asset"
+
+data:
+  row_count: 10000000
+  keep_table: true
+
+tests:
+  - type: "read"
+    expected: 10000000
+    tolerance: 0.1
+  
+  - type: "write"
+    expected: 10000000
+    tolerance: 0.1

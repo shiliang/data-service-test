@@ -1,0 +1,26 @@
+name: "mysql_1m_floats_custom"
+description: "MySQL 1M行 浮点数类型测试（FLOAT/DOUBLE）"
+
+database:
+  type: "mysql"
+  name: "mysql_test"
+
+schema:
+  field_count: 3
+  field_types: ["float", "double", "decimal"]
+  max_field_size: 1024
+  table_name: "test_floats"
+  asset_name: "test_floats_asset"
+
+data:
+  row_count: 1000000
+  keep_table: true
+
+tests:
+  - type: "read"
+    expected: 1000000
+    tolerance: 0.1
+  
+  - type: "write"
+    expected: 1000000
+    tolerance: 0.1

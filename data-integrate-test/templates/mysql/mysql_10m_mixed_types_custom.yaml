@@ -1,0 +1,26 @@
+name: "mysql_10m_mixed_types_custom"
+description: "MySQL 10M行 混合类型测试（整型+浮点+字符串+日期时间）"
+
+database:
+  type: "mysql"
+  name: "mysql_test"
+
+schema:
+  field_count: 12
+  field_types: ["tinyint", "int", "bigint", "float", "double", "decimal", "char", "varchar", "text", "date", "datetime", "timestamp"]
+  max_field_size: 1024
+  table_name: "test_mixed"
+  asset_name: "test_mixed_asset"
+
+data:
+  row_count: 10000000
+  keep_table: true
+
+tests:
+  - type: "read"
+    expected: 10000000
+    tolerance: 0.1
+  
+  - type: "write"
+    expected: 10000000
+    tolerance: 0.1

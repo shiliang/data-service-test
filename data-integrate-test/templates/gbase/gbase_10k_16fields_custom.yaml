@@ -1,0 +1,26 @@
+name: "gbase_10k_16fields_custom"
+description: "GBase 10K行 16字段测试（自定义表名和资产名）"
+
+database:
+  type: "gbase"
+  name: "gbase_test"
+
+schema:
+  field_count: 16
+  field_types: ["int", "varchar", "text", "decimal", "datetime", "blob"]
+  max_field_size: 1024
+  table_name: "test_10k_16f"
+  asset_name: "test_10k_16f_asset"
+
+data:
+  row_count: 10000
+  keep_table: true
+
+tests:
+  - type: "read"
+    expected: 10000
+    tolerance: 0.1
+  
+  - type: "write"
+    expected: 10000
+    tolerance: 0.1

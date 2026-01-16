@@ -5,6 +5,7 @@ import (
 	"data-integrate-test/config"
 	"database/sql"
 	"fmt"
+
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -21,16 +22,16 @@ func (g *GBaseStrategy) Connect(ctx context.Context) error {
 	// GBase使用MySQL协议
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true&loc=Local",
 		g.config.User, g.config.Password, g.config.Host, g.config.Port, g.config.Database)
-	
+
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
 		return err
 	}
-	
+
 	if err := db.PingContext(ctx); err != nil {
 		return err
 	}
-	
+
 	g.db = db
 	return nil
 }
@@ -60,3 +61,17 @@ func (g *GBaseStrategy) GetRowCount(ctx context.Context, tableName string) (int6
 	return count, err
 }
 
+func (g *GBaseStrategy) TableExists(ctx context.Context, tableName string) (bool, error) {
+	query := `
+		SELECT COUNT(*) 
+		FROM information_schema.tables 
+		WHERE table_schema = DATABASE() 
+		AND table_name = ?
+	`
+	var count int
+	err := g.db.QueryRowContext(ctx, query, tableName).Scan(&count)
+	if err != nil {
+		return false, err
+	}
+	return count > 0, nil
+}

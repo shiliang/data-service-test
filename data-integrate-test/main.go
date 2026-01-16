@@ -5,7 +5,6 @@ import (
 	"data-integrate-test/clients"
 	"data-integrate-test/config"
 	"data-integrate-test/isolation"
-	"data-integrate-test/snapshots"
 	"data-integrate-test/strategies"
 	"data-integrate-test/testcases"
 	"flag"
@@ -53,18 +52,40 @@ func main() {
 	defer dataClient.Close()
 
 	// 创建管理器
-	snapshotMgr, err := snapshots.NewSnapshotManager("snapshots")
-	if err != nil {
-		log.Fatalf("创建快照管理器失败: %v", err)
-	}
-	defer snapshotMgr.Close()
-
 	nsMgr := isolation.NewNamespaceManager("test")
 
 	// 获取数据库配置
-	dbConfig, err := cfg.GetDatabaseConfig(template.Database.Type)
-	if err != nil {
-		log.Fatalf("获取数据库配置失败: %v", err)
+	// 如果模板中指定了数据库名称，优先使用名称匹配；否则使用类型匹配
+	var dbConfig *config.DatabaseConfig
+	if template.Database.Name != "" {
+		// 尝试通过名称查找配置
+		for _, db := range cfg.Databases {
+			if db.Name == template.Database.Name && db.Type == template.Database.Type {
+				// 创建配置副本，使用模板中的name作为数据库名
+				dbConfig = &config.DatabaseConfig{
+					Type:     db.Type,
+					Name:     db.Name,
+					Host:     db.Host,
+					Port:     db.Port,
+					User:     db.User,
+					Password: db.Password,
+					Database: template.Database.Name, // 使用模板中的name作为数据库名
+				}
+				break
+			}
+		}
+		if dbConfig == nil {
+			log.Fatalf("未找到数据库配置: name=%s, type=%s", template.Database.Name, template.Database.Type)
+		}
+		fmt.Printf("使用数据库: %s (模板指定)\n", template.Database.Name)
+	} else {
+		// 使用类型匹配
+		var err error
+		dbConfig, err = cfg.GetDatabaseConfig(template.Database.Type)
+		if err != nil {
+			log.Fatalf("获取数据库配置失败: %v", err)
+		}
+		fmt.Printf("使用数据库: %s (配置默认)\n", dbConfig.Database)
 	}
 
 	// 创建数据库策略
@@ -80,7 +101,6 @@ func main() {
 		idaClient,
 		dataClient,
 		strategy,
-		snapshotMgr,
 		nsMgr,
 	)
 

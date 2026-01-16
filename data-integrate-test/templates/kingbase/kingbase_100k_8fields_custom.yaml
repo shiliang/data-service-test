@@ -1,0 +1,26 @@
+name: "kingbase_100k_8fields_custom"
+description: "KingBase 100K行 8字段测试（自定义表名和资产名）"
+
+database:
+  type: "kingbase"
+  name: "kingbase_test"
+
+schema:
+  field_count: 8
+  field_types: ["int", "varchar", "text", "decimal", "datetime"]
+  max_field_size: 1024
+  table_name: "test_100k_8f"
+  asset_name: "test_100k_8f_asset"
+
+data:
+  row_count: 100000
+  keep_table: true
+
+tests:
+  - type: "read"
+    expected: 100000
+    tolerance: 0.1
+  
+  - type: "write"
+    expected: 100000
+    tolerance: 0.1

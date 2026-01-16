@@ -1,0 +1,26 @@
+name: "mysql_100k_all_numeric_custom"
+description: "MySQL 100K行 所有数值类型组合测试"
+
+database:
+  type: "mysql"
+  name: "mysql_test"
+
+schema:
+  field_count: 10
+  field_types: ["tinyint", "smallint", "mediumint", "int", "bigint", "float", "double", "decimal", "decimal18", "decimal38"]
+  max_field_size: 1024
+  table_name: "test_numeric"
+  asset_name: "test_numeric_asset"
+
+data:
+  row_count: 100000
+  keep_table: true
+
+tests:
+  - type: "read"
+    expected: 100000
+    tolerance: 0.1
+  
+  - type: "write"
+    expected: 100000
+    tolerance: 0.1

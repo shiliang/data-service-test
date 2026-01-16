@@ -1,0 +1,26 @@
+name: "vastbase_50m_4fields_custom"
+description: "VastBase 50M行 4字段测试（自定义表名和资产名）"
+
+database:
+  type: "vastbase"
+  name: "vastbase_test"
+
+schema:
+  field_count: 4
+  field_types: ["int", "varchar", "text", "decimal"]
+  max_field_size: 1024
+  table_name: "test_50m_4f"
+  asset_name: "test_50m_4f_asset"
+
+data:
+  row_count: 50000000
+  keep_table: true
+
+tests:
+  - type: "read"
+    expected: 50000000
+    tolerance: 0.1
+  
+  - type: "write"
+    expected: 50000000
+    tolerance: 0.1

@@ -1,0 +1,26 @@
+name: "mysql_1m_decimal_precision_custom"
+description: "MySQL 1M行 DECIMAL不同精度测试"
+
+database:
+  type: "mysql"
+  name: "mysql_test"
+
+schema:
+  field_count: 4
+  field_types: ["decimal", "decimal18", "decimal38"]
+  max_field_size: 1024
+  table_name: "test_decimal"
+  asset_name: "test_decimal_asset"
+
+data:
+  row_count: 1000000
+  keep_table: true
+
+tests:
+  - type: "read"
+    expected: 1000000
+    tolerance: 0.1
+  
+  - type: "write"
+    expected: 1000000
+    tolerance: 0.1
