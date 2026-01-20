@@ -4,9 +4,10 @@ import (
 	"context"
 	"fmt"
 	"time"
+
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-	
+
 	// 使用生成的proto代码
 	pb "data-integrate-test/generated/proto/proto"
 )
@@ -23,7 +24,7 @@ func NewIDAServiceClient(host string, port int) (*IDAServiceClient, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	return &IDAServiceClient{
 		conn:   conn,
 		client: pb.NewMiraIdaAccessClient(conn),
@@ -74,9 +75,9 @@ type TableColumn struct {
 
 // CreateAssetResponse 创建资产响应
 type CreateAssetResponse struct {
-	AssetId  int32
-	Success  bool
-	Message  string
+	AssetId int32
+	Success bool
+	Message string
 }
 
 // CreateDataSource 创建数据源
@@ -86,31 +87,31 @@ func (c *IDAServiceClient) CreateDataSource(ctx context.Context, req *CreateData
 		BaseRequest: &pb.BaseRequest{
 			RequestId: fmt.Sprintf("ds_%d", time.Now().Unix()),
 		},
-		DbPattern:  1, // 1-关系型数据库
-		DbType:     req.DBType,
-		Name:       req.Name,
-		Host:       req.Host,
-		Port:       req.Port,
-		Username:   req.Username,
-		Password:   req.Password,
+		DbPattern:    1, // 1-关系型数据库
+		DbType:       req.DBType,
+		Name:         req.Name,
+		Host:         req.Host,
+		Port:         req.Port,
+		Username:     req.Username,
+		Password:     req.Password,
 		InstanceName: req.DatabaseName,
 	}
-	
+
 	resp, err := c.client.CreateDataSource(ctx, protoReq)
 	if err != nil {
 		return nil, fmt.Errorf("gRPC调用失败: %v", err)
 	}
-	
+
 	// 转换响应
 	result := &CreateDataSourceResponse{
 		Success: resp.BaseResponse.Code == 0,
 		Message: resp.BaseResponse.Msg,
 	}
-	
+
 	if resp.Data != nil {
 		result.DataSourceId = resp.Data.Id
 	}
-	
+
 	return result, nil
 }
 
@@ -127,16 +128,16 @@ func (c *IDAServiceClient) CreateAsset(ctx context.Context, req *CreateAssetRequ
 			Cid:         "test_cid_001",
 		},
 		ResourceBasic: &pb.ResourceBasic{
-			ResourceNumber: fmt.Sprintf("ASSET_%d", time.Now().Unix()),
-			ZhName:        req.AssetName,
-			EnName:        req.AssetEnName,
-			Description:   fmt.Sprintf("测试资产: %s", req.AssetName),
-			ScaleValue:    1000,
-			ScaleUnit:     1, // MB
-			UseLimit:      "测试使用",
-			Type:          1, // 1-库表
-			DataType:      2, // 2-企业数据
-			Authorized:    1, // 1-不需要授权
+			ResourceNumber:  fmt.Sprintf("ASSET_%d", time.Now().Unix()),
+			ZhName:          req.AssetName,
+			EnName:          req.AssetEnName,
+			Description:     fmt.Sprintf("测试资产: %s", req.AssetName),
+			ScaleValue:      1000,
+			ScaleUnit:       1, // MB
+			UseLimit:        "测试使用",
+			Type:            1, // 1-库表
+			DataType:        2, // 2-企业数据
+			Authorized:      1, // 1-不需要授权
 			MachineLearning: 1, // 1-不支持
 		},
 		Table: &pb.Table{
@@ -145,22 +146,22 @@ func (c *IDAServiceClient) CreateAsset(ctx context.Context, req *CreateAssetRequ
 			Columns:      convertColumnsToProto(req.Columns),
 		},
 	}
-	
+
 	resp, err := c.client.CreateAsset(ctx, protoReq)
 	if err != nil {
 		return nil, fmt.Errorf("gRPC调用失败: %v", err)
 	}
-	
+
 	// 转换响应
 	result := &CreateAssetResponse{
 		Success: resp.BaseResponse.Code == 0,
 		Message: resp.BaseResponse.Msg,
 	}
-	
+
 	if resp.Data != nil {
 		result.AssetId = resp.Data.Id
 	}
-	
+
 	return result, nil
 }
 
@@ -185,15 +186,15 @@ type GetPrivateDBConnInfoRequest struct {
 
 // GetPrivateDBConnInfoResp 数据源连接信息
 type GetPrivateDBConnInfoResp struct {
-	DbConnId   int32
-	ConnName   string
-	Host       string
-	Port       int32
-	Type       int32 // 数据库类型：1.mysql, 2.kingbase, 3.gbase, 4.vastbase
-	Username   string
-	Password   string
-	DbName     string
-	CreatedAt  string
+	DbConnId    int32
+	ConnName    string
+	Host        string
+	Port        int32
+	Type        int32 // 数据库类型：1.mysql, 2.kingbase, 3.gbase, 4.vastbase
+	Username    string
+	Password    string
+	DbName      string
+	CreatedAt   string
 	LlmHubToken string
 }
 
@@ -211,18 +212,18 @@ func (c *IDAServiceClient) GetPrivateDBConnInfo(ctx context.Context, req *GetPri
 		RequestId: req.RequestId,
 		DbConnId:  req.DbConnId,
 	}
-	
+
 	resp, err := c.client.GetPrivateDBConnInfo(ctx, protoReq)
 	if err != nil {
 		return nil, fmt.Errorf("gRPC调用失败: %v", err)
 	}
-	
+
 	// 转换响应
 	result := &GetPrivateDBConnInfoResponse{
 		Code: resp.BaseResponse.Code,
 		Msg:  resp.BaseResponse.Msg,
 	}
-	
+
 	if resp.Data != nil {
 		result.Data = &GetPrivateDBConnInfoResp{
 			DbConnId:    resp.Data.DbConnId,
@@ -237,7 +238,7 @@ func (c *IDAServiceClient) GetPrivateDBConnInfo(ctx context.Context, req *GetPri
 			LlmHubToken: resp.Data.LlmHubToken,
 		}
 	}
-	
+
 	return result, nil
 }
 
@@ -298,7 +299,7 @@ func (c *IDAServiceClient) GetPrivateAssetList(ctx context.Context, req *GetPriv
 		PageNumber: req.PageNumber,
 		PageSize:   req.PageSize,
 	}
-	
+
 	// 转换过滤器
 	if len(req.Filters) > 0 {
 		protoReq.Filters = make([]*pb.Filter, len(req.Filters))
@@ -309,25 +310,25 @@ func (c *IDAServiceClient) GetPrivateAssetList(ctx context.Context, req *GetPriv
 			}
 		}
 	}
-	
+
 	resp, err := c.client.GetPrivateAssetList(ctx, protoReq)
 	if err != nil {
 		return nil, fmt.Errorf("gRPC调用失败: %v", err)
 	}
-	
+
 	// 转换响应
 	result := &GetPrivateAssetListResponse{
 		Code: resp.BaseResponse.Code,
 		Msg:  resp.BaseResponse.Msg,
 	}
-	
+
 	if resp.Data != nil {
 		result.Data.Pagination = Pagination{
 			PageNumber: resp.Data.Pagination.PageNumber,
 			PageSize:   resp.Data.Pagination.PageSize,
 			Total:      resp.Data.Pagination.Total,
 		}
-		
+
 		// 转换资产列表
 		if resp.Data.List != nil {
 			result.Data.List = make([]AssetItem, len(resp.Data.List))
@@ -349,7 +350,7 @@ func (c *IDAServiceClient) GetPrivateAssetList(ctx context.Context, req *GetPriv
 			}
 		}
 	}
-	
+
 	return result, nil
 }
 
@@ -391,10 +392,10 @@ type DataInfo struct {
 
 // SaveTableColumnItem 数据表字段信息
 type SaveTableColumnItem struct {
-	Name        string
-	DataType    string
-	DataLength  int32
-	Description string
+	Name         string
+	DataType     string
+	DataLength   string
+	Description  string
 	IsPrimaryKey int32
 	PrivacyQuery int32
 }
@@ -413,18 +414,18 @@ func (c *IDAServiceClient) GetPrivateAssetInfo(ctx context.Context, req *GetPriv
 		RequestId: req.RequestId,
 		AssetId:   req.AssetId,
 	}
-	
+
 	resp, err := c.client.GetPrivateAssetInfo(ctx, protoReq)
 	if err != nil {
 		return nil, fmt.Errorf("gRPC调用失败: %v", err)
 	}
-	
+
 	// 转换响应
 	result := &GetPrivateAssetInfoResponse{
 		Code: resp.BaseResponse.Code,
 		Msg:  resp.BaseResponse.Msg,
 	}
-	
+
 	if resp.Data != nil {
 		result.Data = &AssetInfo{
 			AssetId:         resp.Data.AssetId,
@@ -445,7 +446,7 @@ func (c *IDAServiceClient) GetPrivateAssetInfo(ctx context.Context, req *GetPriv
 			AccountAlias:    resp.Data.AccountAlias,
 			DataProductType: int32(resp.Data.DataProductType),
 		}
-		
+
 		// 转换数据信息
 		if resp.Data.DataInfo != nil {
 			result.Data.DataInfo = &DataInfo{
@@ -453,7 +454,7 @@ func (c *IDAServiceClient) GetPrivateAssetInfo(ctx context.Context, req *GetPriv
 				TableName:    resp.Data.DataInfo.TableName,
 				DataSourceId: resp.Data.DataInfo.DataSourceId,
 			}
-			
+
 			// 转换字段列表
 			if resp.Data.DataInfo.ItemList != nil {
 				result.Data.DataInfo.ItemList = make([]SaveTableColumnItem, len(resp.Data.DataInfo.ItemList))
@@ -470,7 +471,7 @@ func (c *IDAServiceClient) GetPrivateAssetInfo(ctx context.Context, req *GetPriv
 			}
 		}
 	}
-	
+
 	return result, nil
 }
 
@@ -479,7 +480,7 @@ func convertColumnsToProto(columns []TableColumn) []*pb.TableColumn {
 	if len(columns) == 0 {
 		return []*pb.TableColumn{}
 	}
-	
+
 	protoColumns := make([]*pb.TableColumn, len(columns))
 	for i, col := range columns {
 		primaryKey := int32(0)

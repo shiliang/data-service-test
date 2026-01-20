@@ -1,5 +1,5 @@
 # 多阶段构建：编译阶段
-FROM golang:latest as builder
+FROM golang:latest AS builder
 
 # 配置Go依赖环境
 RUN go env -w GO111MODULE=on
@@ -22,7 +22,7 @@ COPY go.mod go.sum ./
 
 # 先尝试下载依赖（如果 vendor 不存在）
 # 如果 vendor 存在，后续会优先使用 vendor
-RUN go mod download
+#RUN go mod download
 
 # 复制 vendor 目录（如果存在，优先使用本地依赖）
 # 注意：需要先运行 go mod vendor 生成 vendor 目录
@@ -48,8 +48,10 @@ RUN go mod tidy
 # 拷贝存储层代码
 COPY storage/ ./storage/
 
-# 构建应用（使用 vendor 模式，如果 vendor 存在）
-# -mod=vendor 会优先使用 vendor 目录中的依赖，避免网络下载
+# 重新生成 vendor 目录以确保与 go.mod 同步
+RUN go mod vendor
+
+# 构建应用（使用 vendor 模式）
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -mod=vendor -o ida-access-service-mock .
 
 # 运行阶段：使用alpine减小镜像大小

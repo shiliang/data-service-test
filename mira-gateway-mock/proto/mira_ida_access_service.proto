@@ -71,7 +71,7 @@ message DataInfo {
 message SaveTableColumnItem {
   string name = 1;
   string dataType = 2;
-  int32 dataLength = 3;
+  string dataLength = 3;
   string description = 4;
   int32 isPrimaryKey = 5;
   int32 privacyQuery = 6;

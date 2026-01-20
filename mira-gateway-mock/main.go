@@ -10,7 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-	
+
 	pb "mira-gateway-mock/mirapb"
 )
 
@@ -36,21 +36,21 @@ type GetPrivateDBConnInfoRequest struct {
 
 // GetPrivateDBConnInfoResp 数据库连接信息
 type GetPrivateDBConnInfoResp struct {
-	DbConnId   int32  `json:"dbConnId"`
-	ConnName   string `json:"connName"`
-	Host       string `json:"host"`
-	Port       int32  `json:"port"`
-	Type       int32  `json:"type"` // 1.mysql, 2.kingbase, 3.llm-hub
-	Username   string `json:"username"`
-	Password   string `json:"password"`
-	DbName     string `json:"dbName"`
-	CreatedAt  string `json:"createdAt"`
+	DbConnId    int32  `json:"dbConnId"`
+	ConnName    string `json:"connName"`
+	Host        string `json:"host"`
+	Port        int32  `json:"port"`
+	Type        int32  `json:"type"` // 1.mysql, 2.kingbase, 3.llm-hub
+	Username    string `json:"username"`
+	Password    string `json:"password"`
+	DbName      string `json:"dbName"`
+	CreatedAt   string `json:"createdAt"`
 	LlmHubToken string `json:"llmHubToken,omitempty"`
 }
 
 // GetPrivateDBConnInfoResponse 获取数据库连接信息响应
 type GetPrivateDBConnInfoResponse struct {
-	BaseResponse BaseResponse          `json:"baseResponse"`
+	BaseResponse BaseResponse             `json:"baseResponse"`
 	Data         GetPrivateDBConnInfoResp `json:"data"`
 }
 
@@ -63,12 +63,12 @@ type GetPrivateAssetInfoByEnNameRequest struct {
 // SaveTableColumnItem 数据表字段信息
 // 注意：JSON 标签需要匹配 data-service 的期望格式（下划线格式）
 type SaveTableColumnItem struct {
-	Name        string `json:"name"`
-	DataType    string `json:"data_type"`
-	DataLength  int32  `json:"data_length"`
-	Description string `json:"description"`
-	IsPrimaryKey int32 `json:"is_primary_key"`
-	PrivacyQuery int32 `json:"privacy_query"`
+	Name         string `json:"name"`
+	DataType     string `json:"data_type"`
+	DataLength   string `json:"data_length"`
+	Description  string `json:"description"`
+	IsPrimaryKey int32  `json:"is_primary_key"`
+	PrivacyQuery int32  `json:"privacy_query"`
 }
 
 // DataInfo 数据库信息
@@ -81,13 +81,13 @@ type DataInfo struct {
 
 // AssetInfo 资产信息
 type AssetInfo struct {
-	AssetId      string   `json:"assetId"` // 修改为字符串类型，匹配 data-service 的期望
-	AssetNumber  string   `json:"assetNumber"`
-	AssetName    string   `json:"assetName"`
-	AssetEnName  string   `json:"assetEnName"`
-	AssetType    int32    `json:"assetType"` // 1-库表, 2-文件
-	DataInfo     *DataInfo `json:"dataInfo"` // 嵌套的 DataInfo 结构
-	DataProductType int32 `json:"dataProductType,omitempty"`
+	AssetId         string    `json:"assetId"` // 修改为字符串类型，匹配 data-service 的期望
+	AssetNumber     string    `json:"assetNumber"`
+	AssetName       string    `json:"assetName"`
+	AssetEnName     string    `json:"assetEnName"`
+	AssetType       int32     `json:"assetType"` // 1-库表, 2-文件
+	DataInfo        *DataInfo `json:"dataInfo"`  // 嵌套的 DataInfo 结构
+	DataProductType int32     `json:"dataProductType,omitempty"`
 }
 
 // GetPrivateAssetInfoByEnNameResponse 通过资产英文名称获取资产详情响应
@@ -104,12 +104,12 @@ type GetResultStorageConfigRequest struct {
 
 // ResultStorageConfig 结果存储配置
 type ResultStorageConfig struct {
-	ResultStorageType int32  `json:"resultStorageType"` // 0-未知(存储到MINIO), 1-mysql, 2-kingbase等
-	Host              string `json:"host"`
-	Port              int32  `json:"port"`
-	User              string `json:"user"`
-	Password          string `json:"password"`
-	Db                string `json:"db"`
+	ResultStorageType int32      `json:"resultStorageType"` // 0-未知(存储到MINIO), 1-mysql, 2-kingbase等
+	Host              string     `json:"host"`
+	Port              int32      `json:"port"`
+	User              string     `json:"user"`
+	Password          string     `json:"password"`
+	Db                string     `json:"db"`
 	TlsConfig         *TlsConfig `json:"tlsConfig,omitempty"`
 }
 
@@ -144,24 +144,24 @@ func initIDAClient() error {
 	if idaHost == "" {
 		idaHost = "ida-access-service-mock"
 	}
-	
+
 	idaPort := os.Getenv("IDA_SERVICE_PORT")
 	if idaPort == "" {
 		idaPort = "9091"
 	}
-	
+
 	addr := fmt.Sprintf("%s:%s", idaHost, idaPort)
 	log.Printf("连接IDA服务: %s", addr)
-	
+
 	conn, err := grpc.NewClient(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		return fmt.Errorf("连接IDA服务失败: %v", err)
 	}
-	
+
 	idaConn = conn
 	idaClient = pb.NewMiraIdaAccessClient(conn)
 	log.Printf("IDA服务客户端初始化成功")
-	
+
 	return nil
 }
 
@@ -241,7 +241,7 @@ func handleGetPrivateDBConnInfo(c *gin.Context) {
 		RequestId: req.RequestId,
 		DbConnId:  req.DbConnId,
 	}
-	
+
 	protoResp, err := idaClient.GetPrivateDBConnInfo(ctx, protoReq)
 	if err != nil {
 		log.Printf("调用IDA服务失败: %v", err)
@@ -253,7 +253,7 @@ func handleGetPrivateDBConnInfo(c *gin.Context) {
 		})
 		return
 	}
-	
+
 	// 转换响应
 	resp := GetPrivateDBConnInfoResponse{
 		BaseResponse: BaseResponse{
@@ -261,7 +261,7 @@ func handleGetPrivateDBConnInfo(c *gin.Context) {
 			Msg:  protoResp.BaseResponse.Msg,
 		},
 	}
-	
+
 	if protoResp.Data != nil {
 		resp.Data = GetPrivateDBConnInfoResp{
 			DbConnId:    protoResp.Data.DbConnId,
@@ -288,7 +288,7 @@ func handleGetPrivateAssetInfoByEnName(c *gin.Context) {
 		return
 	}
 
-	log.Printf("收到GetPrivateAssetInfoByEnName请求: RequestId=%s, AssetEnName=%s", 
+	log.Printf("收到GetPrivateAssetInfoByEnName请求: RequestId=%s, AssetEnName=%s",
 		req.BaseRequest.RequestId, req.AssetEnName)
 
 	// 调用IDA服务的gRPC接口
@@ -302,7 +302,7 @@ func handleGetPrivateAssetInfoByEnName(c *gin.Context) {
 		},
 		AssetEnName: req.AssetEnName,
 	}
-	
+
 	protoResp, err := idaClient.GetPrivateAssetInfoByEnName(ctx, protoReq)
 	if err != nil {
 		log.Printf("调用IDA服务失败: %v", err)
@@ -314,7 +314,7 @@ func handleGetPrivateAssetInfoByEnName(c *gin.Context) {
 		})
 		return
 	}
-	
+
 	// 转换响应
 	resp := GetPrivateAssetInfoByEnNameResponse{
 		BaseResponse: BaseResponse{
@@ -322,31 +322,31 @@ func handleGetPrivateAssetInfoByEnName(c *gin.Context) {
 			Msg:  protoResp.BaseResponse.Msg,
 		},
 	}
-	
+
 	if protoResp.Data != nil {
 		assetInfo := AssetInfo{
-			AssetId:        protoResp.Data.AssetId,
-			AssetNumber:    protoResp.Data.AssetNumber,
-			AssetName:      protoResp.Data.AssetName,
-			AssetEnName:    protoResp.Data.AssetEnName,
-			AssetType:      protoResp.Data.AssetType,
+			AssetId:         protoResp.Data.AssetId,
+			AssetNumber:     protoResp.Data.AssetNumber,
+			AssetName:       protoResp.Data.AssetName,
+			AssetEnName:     protoResp.Data.AssetEnName,
+			AssetType:       protoResp.Data.AssetType,
 			DataProductType: int32(protoResp.Data.DataProductType),
 		}
-		
+
 		// 转换DataInfo
 		if protoResp.Data.DataInfo != nil {
 			var itemList []SaveTableColumnItem
 			for _, item := range protoResp.Data.DataInfo.ItemList {
 				itemList = append(itemList, SaveTableColumnItem{
-					Name:        item.Name,
-					DataType:    item.DataType,
-					DataLength:  item.DataLength,
-					Description: item.Description,
+					Name:         item.Name,
+					DataType:     item.DataType,
+					DataLength:   item.DataLength,
+					Description:  item.Description,
 					IsPrimaryKey: item.IsPrimaryKey,
 					PrivacyQuery: item.PrivacyQuery,
 				})
 			}
-			
+
 			assetInfo.DataInfo = &DataInfo{
 				DbName:       protoResp.Data.DataInfo.DbName,
 				TableName:    protoResp.Data.DataInfo.TableName,
@@ -354,7 +354,7 @@ func handleGetPrivateAssetInfoByEnName(c *gin.Context) {
 				DataSourceId: protoResp.Data.DataInfo.DataSourceId,
 			}
 		}
-		
+
 		resp.Data = assetInfo
 	}
 
@@ -369,7 +369,7 @@ func handleGetResultStorageConfig(c *gin.Context) {
 		return
 	}
 
-	log.Printf("收到GetResultStorageConfig请求: JobInstanceId=%s, ParticipantId=%s", 
+	log.Printf("收到GetResultStorageConfig请求: JobInstanceId=%s, ParticipantId=%s",
 		req.JobInstanceId, req.ParticipantId)
 
 	// Mock数据 - 返回存储到MINIO的配置（ResultStorageType=0表示存储到MINIO）
@@ -407,4 +407,3 @@ func handlePushJobResult(c *gin.Context) {
 		"message": "Job result pushed successfully",
 	})
 }
-

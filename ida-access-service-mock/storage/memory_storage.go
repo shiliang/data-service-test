@@ -10,12 +10,12 @@ import (
 
 // MemoryStorage 内存存储实现
 type MemoryStorage struct {
-	mu          sync.RWMutex
-	dataSources map[int32]*mirapb.GetPrivateDBConnInfoResp
-	assets      map[int32]*mirapb.AssetInfo
+	mu             sync.RWMutex
+	dataSources    map[int32]*mirapb.GetPrivateDBConnInfoResp
+	assets         map[int32]*mirapb.AssetInfo
 	assetsByEnName map[string]int32 // assetEnName -> assetId
-	nextDSId    int32
-	nextAssetId int32
+	nextDSId       int32
+	nextAssetId    int32
 }
 
 // NewMemoryStorage 创建内存存储实例
@@ -39,15 +39,15 @@ func (s *MemoryStorage) CreateDataSource(ctx context.Context, req *mirapb.Create
 
 	now := time.Now().Format(time.RFC3339)
 	dataSource := &mirapb.GetPrivateDBConnInfoResp{
-		DbConnId:   id,
-		ConnName:   req.Name,
-		Host:       req.Host,
-		Port:       req.Port,
-		Type:       req.DbType,
-		Username:   req.Username,
-		Password:   req.Password,
-		DbName:     req.InstanceName,
-		CreatedAt:  now,
+		DbConnId:    id,
+		ConnName:    req.Name,
+		Host:        req.Host,
+		Port:        req.Port,
+		Type:        req.DbType,
+		Username:    req.Username,
+		Password:    req.Password,
+		DbName:      req.InstanceName,
+		CreatedAt:   now,
 		LlmHubToken: req.LlmHubToken,
 	}
 
@@ -113,17 +113,17 @@ func (s *MemoryStorage) CreateAsset(ctx context.Context, req *mirapb.CreateAsset
 	s.nextAssetId++
 
 	now := time.Now().Format(time.RFC3339)
-	
+
 	// 构建 DataInfo
 	var dataInfo *mirapb.DataInfo
 	if req.Table != nil {
 		itemList := make([]*mirapb.SaveTableColumnItem, 0, len(req.Table.Columns))
 		for _, col := range req.Table.Columns {
 			itemList = append(itemList, &mirapb.SaveTableColumnItem{
-				Name:        col.Name,
-				DataType:    col.DataType,
-				DataLength:  col.DataLength,
-				Description: col.Description,
+				Name:         col.Name,
+				DataType:     col.DataType,
+				DataLength:   fmt.Sprintf("%d", col.DataLength), // 转换为字符串
+				Description:  col.Description,
 				IsPrimaryKey: col.PrimaryKey,
 				PrivacyQuery: 0, // 默认值
 			})
@@ -204,25 +204,25 @@ func (s *MemoryStorage) ListAssets(ctx context.Context, pageNumber, pageSize int
 
 	// 简单的过滤和分页实现
 	allAssets := make([]*mirapb.AssetItem, 0, len(s.assets))
-		for _, asset := range s.assets {
-			// 应用过滤器（简化实现）
-			if matchFilters(asset, filters) {
-				allAssets = append(allAssets, &mirapb.AssetItem{
-					AssetId:         asset.AssetId,
-					AssetNumber:     asset.AssetNumber,
-					AssetName:       asset.AssetName,
-					HolderCompany:   asset.HolderCompany,
-					Intro:           asset.Intro,
-					TxId:           asset.TxId,
-					UploadedAt:      asset.UploadedAt,
-					ChainName:       "",
-					ParticipantId:   asset.ParticipantId,
-					ParticipantName: asset.ParticipantName,
-					Alias:          asset.AccountAlias,
-					DataProductType: asset.DataProductType,
-				})
-			}
+	for _, asset := range s.assets {
+		// 应用过滤器（简化实现）
+		if matchFilters(asset, filters) {
+			allAssets = append(allAssets, &mirapb.AssetItem{
+				AssetId:         asset.AssetId,
+				AssetNumber:     asset.AssetNumber,
+				AssetName:       asset.AssetName,
+				HolderCompany:   asset.HolderCompany,
+				Intro:           asset.Intro,
+				TxId:            asset.TxId,
+				UploadedAt:      asset.UploadedAt,
+				ChainName:       "",
+				ParticipantId:   asset.ParticipantId,
+				ParticipantName: asset.ParticipantName,
+				Alias:           asset.AccountAlias,
+				DataProductType: asset.DataProductType,
+			})
 		}
+	}
 
 	total := int64(len(allAssets))
 
@@ -284,10 +284,10 @@ func (s *MemoryStorage) UpdateAsset(ctx context.Context, req *mirapb.UpdateAsset
 		itemList := make([]*mirapb.SaveTableColumnItem, 0, len(req.Table.Columns))
 		for _, col := range req.Table.Columns {
 			itemList = append(itemList, &mirapb.SaveTableColumnItem{
-				Name:        col.Name,
-				DataType:    col.DataType,
-				DataLength:  col.DataLength,
-				Description: col.Description,
+				Name:         col.Name,
+				DataType:     col.DataType,
+				DataLength:   fmt.Sprintf("%d", col.DataLength), // 转换为字符串
+				Description:  col.Description,
 				IsPrimaryKey: col.PrimaryKey,
 				PrivacyQuery: 0, // 默认值
 			})
@@ -346,9 +346,9 @@ func copyAssetInfo(src *mirapb.AssetInfo) *mirapb.AssetInfo {
 		TimeSpan:        src.TimeSpan,
 		HolderCompany:   src.HolderCompany,
 		Intro:           src.Intro,
-		TxId:           src.TxId,
+		TxId:            src.TxId,
 		UploadedAt:      src.UploadedAt,
-		VisibleType:    src.VisibleType,
+		VisibleType:     src.VisibleType,
 		ParticipantId:   src.ParticipantId,
 		ParticipantName: src.ParticipantName,
 		AccountAlias:    src.AccountAlias,
@@ -359,10 +359,10 @@ func copyAssetInfo(src *mirapb.AssetInfo) *mirapb.AssetInfo {
 		itemList := make([]*mirapb.SaveTableColumnItem, len(src.DataInfo.ItemList))
 		for i, item := range src.DataInfo.ItemList {
 			itemList[i] = &mirapb.SaveTableColumnItem{
-				Name:        item.Name,
-				DataType:    item.DataType,
-				DataLength:  item.DataLength,
-				Description: item.Description,
+				Name:         item.Name,
+				DataType:     item.DataType,
+				DataLength:   item.DataLength,
+				Description:  item.Description,
 				IsPrimaryKey: item.IsPrimaryKey,
 				PrivacyQuery: item.PrivacyQuery,
 			}
@@ -405,4 +405,3 @@ func matchFilters(asset *mirapb.AssetInfo, filters []*mirapb.Filter) bool {
 
 	return true
 }
-
