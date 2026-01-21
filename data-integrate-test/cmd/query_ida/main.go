@@ -263,7 +263,7 @@ func queryAsset(ctx context.Context, client *clients.IDAServiceClient, assetId i
 		if len(resp.Data.DataInfo.ItemList) > 0 {
 			fmt.Println("  字段列表:")
 			for _, col := range resp.Data.DataInfo.ItemList {
-				fmt.Printf("    - %s (%s, 长度: %d)", col.Name, col.DataType, col.DataLength)
+				fmt.Printf("    - %s (%s, 长度: %s)", col.Name, col.DataType, col.DataLength)
 				if col.IsPrimaryKey == 1 {
 					fmt.Print(" [主键]")
 				}

@@ -588,7 +588,7 @@ message TableColumn {
   // 字段类型
   string dataType = 3 [(google.api.field_behavior) = REQUIRED];
   // 字段长度
-  int32 dataLength = 4 [(google.api.field_behavior) = REQUIRED];
+  string dataLength = 4 [(google.api.field_behavior) = REQUIRED];
   // 是否为主键，1-否，2-是
   int32 primaryKey = 5 [(google.api.field_behavior) = REQUIRED];
   // 是否非空，1-否，2-是

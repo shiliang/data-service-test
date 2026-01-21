@@ -122,7 +122,7 @@ func (s *MemoryStorage) CreateAsset(ctx context.Context, req *mirapb.CreateAsset
 			itemList = append(itemList, &mirapb.SaveTableColumnItem{
 				Name:         col.Name,
 				DataType:     col.DataType,
-				DataLength:   fmt.Sprintf("%d", col.DataLength), // 转换为字符串
+				DataLength:   col.DataLength, // 现在都是 string 类型
 				Description:  col.Description,
 				IsPrimaryKey: col.PrimaryKey,
 				PrivacyQuery: 0, // 默认值
@@ -286,7 +286,7 @@ func (s *MemoryStorage) UpdateAsset(ctx context.Context, req *mirapb.UpdateAsset
 			itemList = append(itemList, &mirapb.SaveTableColumnItem{
 				Name:         col.Name,
 				DataType:     col.DataType,
-				DataLength:   fmt.Sprintf("%d", col.DataLength), // 转换为字符串
+				DataLength:   col.DataLength, // 现在都是 string 类型
 				Description:  col.Description,
 				IsPrimaryKey: col.PrimaryKey,
 				PrivacyQuery: 0, // 默认值

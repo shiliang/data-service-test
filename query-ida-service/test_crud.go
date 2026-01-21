@@ -124,7 +124,7 @@ func main() {
 					OriginName: "id",
 					Name:       "id",
 					DataType:   "int",
-					DataLength: 11,
+					DataLength: "11",
 					PrimaryKey: 2, // 是主键
 					NotNull:    2, // 非空
 					Description: "主键ID",
@@ -134,7 +134,7 @@ func main() {
 					OriginName: "name",
 					Name:       "name",
 					DataType:   "varchar",
-					DataLength: 255,
+					DataLength: "255",
 					PrimaryKey: 1, // 不是主键
 					NotNull:    1, // 可空
 					Description: "名称",

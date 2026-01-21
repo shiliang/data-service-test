@@ -289,7 +289,7 @@ func (te *TestExecutor) registerToIDAService(ctx context.Context) error {
 			columns[i] = clients.TableColumn{
 				Name:        field.Name,
 				DataType:    field.SQLType,
-				DataLength:  0, // 根据实际需要设置
+				DataLength:  "0", // 根据实际需要设置，现在是 string 类型
 				Description: fmt.Sprintf("字段 %s", field.Name),
 				PrimaryKey:  field.Name == "id",
 				NotNull:     !field.Nullable,

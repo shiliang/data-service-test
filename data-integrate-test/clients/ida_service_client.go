@@ -9,7 +9,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 
 	// 使用生成的proto代码
-	pb "data-integrate-test/generated/proto/proto"
+	pb "data-integrate-test/generated/proto"
 )
 
 // IDAServiceClient IDA服务客户端
@@ -67,7 +67,7 @@ type CreateAssetRequest struct {
 type TableColumn struct {
 	Name        string
 	DataType    string
-	DataLength  int32
+	DataLength  string
 	Description string
 	PrimaryKey  bool
 	NotNull     bool
@@ -462,7 +462,7 @@ func (c *IDAServiceClient) GetPrivateAssetInfo(ctx context.Context, req *GetPriv
 					result.Data.DataInfo.ItemList[i] = SaveTableColumnItem{
 						Name:         item.Name,
 						DataType:     item.DataType,
-						DataLength:   item.DataLength,
+						DataLength:   item.DataLength, // 现在都是 string 类型
 						Description:  item.Description,
 						IsPrimaryKey: item.IsPrimaryKey,
 						PrivacyQuery: item.PrivacyQuery,

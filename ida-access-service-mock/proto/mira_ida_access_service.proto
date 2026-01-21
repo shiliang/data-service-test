@@ -196,7 +196,7 @@ message TableColumn {
   string originName = 1;    // 字段原始名称
   string name = 2;          // 字段名称
   string dataType = 3;      // 字段类型
-  int32 dataLength = 4;    // 字段长度
+  string dataLength = 4;    // 字段长度
   int32 primaryKey = 5;     // 是否为主键，1-否，2-是
   int32 notNull = 6;        // 是否非空，1-否，2-是
   string description = 7;   // 字段描述
