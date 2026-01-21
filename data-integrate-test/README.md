@@ -132,3 +132,6 @@ tests:
 - [ ] 支持 OSS 数据测试
 - [ ] 生成测试报告
 
+
+## 生成数据
+go run main.go -template=templates/mysql/mysql_10m_8fields_custom.yaml

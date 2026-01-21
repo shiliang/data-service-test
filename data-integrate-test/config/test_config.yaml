@@ -13,7 +13,7 @@ mock_services:
 databases:
   - name: "mysql_test"
     type: "mysql"
-    host: "mysql-test"  # Docker 网络中使用容器名（mysql-test）
+    host: "mysql-test-new"  # Docker 网络中使用容器名（mysql-test）
     port: 3306
     user: "root"
     password: "password"

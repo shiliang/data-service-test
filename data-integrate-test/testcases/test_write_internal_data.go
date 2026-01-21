@@ -43,7 +43,7 @@ func (te *TestExecutor) testWriteInternalData(
 	// 注意：WriteInternalData 使用配置的数据库（MySQL），不是Doris
 	// 它使用 request.DbName 作为数据库名，但连接的是配置的MySQL
 	dbConfig := te.strategy.GetConnectionInfo()
-	
+
 	writeReq := &clients.WriteInternalDataRequest{
 		ArrowBatch:    arrowBatch,
 		DbName:        dbConfig.Database, // 使用MySQL数据库名
@@ -186,7 +186,7 @@ func (te *TestExecutor) readDataAsArrow(ctx context.Context) ([]byte, error) {
 	return buf, nil
 }
 
-// sqlTypeToArrowType 将SQL类型转换为Arrow类型（简化版本）
+// sqlTypeToArrowType 将SQL类型转换为Arrow类型
 func sqlTypeToArrowType(colType *sql.ColumnType) (arrow.DataType, error) {
 	typeName := colType.DatabaseTypeName()
 	switch typeName {
@@ -200,8 +200,10 @@ func sqlTypeToArrowType(colType *sql.ColumnType) (arrow.DataType, error) {
 		return arrow.PrimitiveTypes.Float64, nil
 	case "DECIMAL", "NUMERIC":
 		return arrow.PrimitiveTypes.Float64, nil
-	case "VARCHAR", "CHAR", "TEXT", "MEDIUMTEXT", "LONGTEXT":
+	case "VARCHAR", "CHAR":
 		return arrow.BinaryTypes.String, nil
+	case "TEXT", "MEDIUMTEXT", "LONGTEXT":
+		return arrow.BinaryTypes.LargeString, nil
 	case "DATE", "DATETIME", "TIMESTAMP", "TIME":
 		return arrow.BinaryTypes.String, nil
 	case "BLOB", "MEDIUMBLOB", "LONGBLOB":
@@ -296,4 +298,3 @@ func appendValueToArrowBuilder(builder array.Builder, val interface{}) error {
 	}
 	return nil
 }
-
